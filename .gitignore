@@ -1,5 +1,7 @@
 bin/
 obj/
+publish/
 .vs/
 *.user
 debug-*.png
+*.zip
