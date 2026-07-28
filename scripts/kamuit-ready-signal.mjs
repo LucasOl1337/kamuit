@@ -3,12 +3,13 @@
  * Lifecycle hook sink for KamuiT ready sounds.
  *
  * Called by Grok/Claude-compatible Stop hooks when an agent turn ends.
- * Drops a one-shot signal file with the KamuiT tab number; the KamuiT app
- * watches that directory and plays SoundEffects/Terminal{N}.mp3.
+ * Drops a one-shot signal file; KamuiT resolves the visual tab slot from tabId
+ * (stable session identity) so close/reorder/limbo don't play the wrong sound.
  *
  * Env (injected into every KamuiT pwsh session):
- *   KAMUIT=1        — marks the session as KamuiT-owned
- *   KAMUIT_TAB      — 1-based tab slot that launched the agent
+ *   KAMUIT=1           — marks the session as KamuiT-owned
+ *   KAMUIT_TAB_ID      — stable Guid of the tab (preferred)
+ *   KAMUIT_TAB         — 1-based slot at creation (legacy fallback only)
  */
 import fs from 'node:fs';
 import os from 'node:os';
@@ -56,8 +57,9 @@ function eventName(payload) {
 }
 
 async function main() {
+  const tabId = String(process.env.KAMUIT_TAB_ID || '').trim();
   const tab = String(process.env.KAMUIT_TAB || '').trim();
-  if (process.env.KAMUIT !== '1' || !tab) {
+  if (process.env.KAMUIT !== '1' || (!tabId && !tab)) {
     process.exit(0);
     return;
   }
@@ -73,10 +75,11 @@ async function main() {
   }
 
   const signal = {
-    v: 1,
+    v: 2,
     at: Date.now(),
     event,
-    tab: Number(tab),
+    tabId: tabId || undefined,
+    tab: tab ? Number(tab) : undefined,
     agent: process.env.GROK_HOOK_EVENT ? 'grok' : process.env.CLAUDE_HOOK_EVENT ? 'claude' : 'hook',
     cwd: process.env.GROK_WORKSPACE_ROOT || process.env.CLAUDE_PROJECT_DIR || payload.cwd || process.cwd()
   };

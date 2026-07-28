@@ -5,7 +5,10 @@
         Title="KamuiT" Background="#FF0C0C0C"
         Icon="kamuit.ico"
         WindowState="Maximized"
-        Closing="OnClosing">
+        Closing="OnClosing"
+        KeyboardNavigation.TabNavigation="None"
+        KeyboardNavigation.ControlTabNavigation="None"
+        KeyboardNavigation.DirectionalNavigation="None">
     <Window.Resources>
         <!-- Scrollbar escura fina estilo Windows Terminal (a default do wrapper e branca/bugada) -->
         <Style TargetType="ScrollBar">
@@ -39,6 +42,8 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="6,2"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="IsTabStop" Value="False"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -74,12 +79,18 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border x:Name="TabBorder" Padding="14,7" Background="Transparent"
+                            <!-- Background explícito pra hit-test no padding; título não rouba o mouse do drag -->
+                            <Border x:Name="TabBorder" Padding="14,7" Background="#00000000"
                                     BorderThickness="0,0,0,2" BorderBrush="Transparent"
-                                    MouseLeftButtonDown="OnTabHeaderClick" Tag="{Binding}">
+                                    Cursor="SizeAll" Tag="{Binding}"
+                                    PreviewMouseLeftButtonDown="OnTabHeaderPreviewMouseDown"
+                                    PreviewMouseMove="OnTabHeaderPreviewMouseMove"
+                                    PreviewMouseLeftButtonUp="OnTabHeaderPreviewMouseUp"
+                                    LostMouseCapture="OnTabHeaderLostCapture">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Title}" Foreground="#FFCCCCCC" VerticalAlignment="Center"
-                                               MaxWidth="220" TextTrimming="CharacterEllipsis"/>
+                                               MaxWidth="220" TextTrimming="CharacterEllipsis"
+                                               IsHitTestVisible="False"/>
                                     <Button Content="&#x2715;" Tag="{Binding}" Click="OnTabCloseClick"
                                             Style="{StaticResource TabIconButton}" Margin="10,0,0,0" FontSize="10"/>
                                 </StackPanel>

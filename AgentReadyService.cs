@@ -8,6 +8,7 @@ namespace KamuiT;
 /// <summary>
 /// Toca SoundEffects/Terminal{N}.mp3 quando um agente sinaliza que terminou
 /// (hook Stop -> ~/.kamuit/signals/*.json -> FileSystemWatcher aqui).
+/// N é a posição visual atual da aba (resolvida via tabId), não o slot de criação.
 /// </summary>
 public sealed class AgentReadyService
 {
@@ -17,11 +18,19 @@ public sealed class AgentReadyService
     private static readonly string SoundsDir = Path.Combine(AppContext.BaseDirectory, "SoundEffects");
 
     private readonly Action<Action> _invokeOnUi;
+    private readonly Func<string?, int?, int?> _resolveSlot;
     private FileSystemWatcher? _watcher;
     private MediaPlayer? _player;
 
     /// <param name="invokeOnUi">marshal pra UI thread (MediaPlayer exige)</param>
-    public AgentReadyService(Action<Action> invokeOnUi) => _invokeOnUi = invokeOnUi;
+    /// <param name="resolveSlot">
+    /// (tabId, legacyTab) → slot visual 1-based atual, ou null para não tocar.
+    /// </param>
+    public AgentReadyService(Action<Action> invokeOnUi, Func<string?, int?, int?> resolveSlot)
+    {
+        _invokeOnUi = invokeOnUi;
+        _resolveSlot = resolveSlot;
+    }
 
     public void Start()
     {
@@ -46,10 +55,23 @@ public sealed class AgentReadyService
         {
             var json = File.ReadAllText(path);
             using var doc = JsonDocument.Parse(json);
-            if (!doc.RootElement.TryGetProperty("tab", out var tabProp))
-                return;
-            var tab = tabProp.GetInt32();
-            _invokeOnUi(() => Play(tab));
+            var root = doc.RootElement;
+
+            string? tabId = null;
+            if (root.TryGetProperty("tabId", out var tabIdProp) && tabIdProp.ValueKind == JsonValueKind.String)
+                tabId = tabIdProp.GetString();
+
+            int? legacyTab = null;
+            if (root.TryGetProperty("tab", out var tabProp) && tabProp.ValueKind == JsonValueKind.Number)
+                legacyTab = tabProp.GetInt32();
+
+            // Resolve na UI thread: a coleção de abas é do dispatcher
+            _invokeOnUi(() =>
+            {
+                var slot = _resolveSlot(tabId, legacyTab);
+                if (slot is int n)
+                    Play(n);
+            });
         }
         catch { /* sinal malformado ou arquivo ainda em escrita — ignora */ }
         finally
