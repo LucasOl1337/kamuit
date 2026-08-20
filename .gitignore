@@ -7,3 +7,4 @@ output/
 *.user
 debug-*.png
 *.zip
+.kamuit-publish-staged/

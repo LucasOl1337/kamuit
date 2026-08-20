@@ -15,7 +15,7 @@ TerminalDE proved the workflow (tabs of agent TUIs, global summon, quick navigat
 - **Project pack** — `Ctrl+Shift+O` lists folders under `C:\projetos`, pick one + N tabs (1–9); each shell starts already in that folder (no triple `cd`)
 - **`Ctrl+1..9`** — jump to tab N (left-to-right), creating the missing tabs on the way
 - **Live tab titles** — tracks what the session announces via OSC escape sequences (e.g. Grok's "Waiting for response…", "Thinking…")
-- **Quick CD** — `Alt+1` Desktop, `Alt+2` `C:\projetos`
+- **Quick CD** — `Alt+1` Desktop, `Alt+2` `C:\projetos`, `Alt+3` `C:\NexUnio`, `Alt+4` `C:\NexUnio\NexSales`, `Alt+5` `C:\NexUnio\sfr-resgate-digital`
 - **Limbo** — `Ctrl+Shift+X` hides a tab without killing its shell; `Ctrl+Shift+L` restores. Hidden tabs cost zero rendering
 - **Agent-ready sounds** — plays `SoundEffects/Terminal{N}.mp3` for the **current visual slot** of the tab that finished
   - Each session gets a stable `KAMUIT_TAB_ID`; close/reorder never mis-label the sound

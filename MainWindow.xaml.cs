@@ -97,6 +97,9 @@ public partial class MainWindow : Window
     private static readonly string DesktopPath =
         Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
     private static readonly string ProjectsRoot = @"C:\projetos";
+    private static readonly string NexUnioRoot = @"C:\NexUnio";
+    private static readonly string NexSalesPath = @"C:\NexUnio\NexSales";
+    private static readonly string SfrResgateDigitalPath = @"C:\NexUnio\sfr-resgate-digital";
 
     public MainWindow()
     {
@@ -181,7 +184,7 @@ public partial class MainWindow : Window
     // ===================== Tabs =====================
 
     /// <param name="workingDirectory">cwd da aba (default C:\projetos).</param>
-    /// <param name="agent">grok / claude / codex / pi / null=shell.</param>
+    /// <param name="agent">grok / claude / codex / pi / jcode / null=shell.</param>
     private TermTab NewTab(string? workingDirectory = null, string? agent = null)
     {
         // Id estável pro hook; Slot visual = posição atual (RefreshSlots).
@@ -577,6 +580,9 @@ public partial class MainWindow : Window
             {
                 Key.D1 => DesktopPath,
                 Key.D2 => ProjectsRoot,
+                Key.D3 => NexUnioRoot,
+                Key.D4 => NexSalesPath,
+                Key.D5 => SfrResgateDigitalPath,
                 _ => null,
             };
             if (target is not null)
@@ -610,6 +616,10 @@ public partial class MainWindow : Window
                     return;
                 case Key.P:
                     NewTab(agent: "pi");
+                    e.Handled = true;
+                    return;
+                case Key.J:
+                    NewTab(agent: "jcode");
                     e.Handled = true;
                     return;
                 case Key.W:
@@ -872,7 +882,7 @@ public partial class MainWindow : Window
             return KamuiResponse.Fail($"cwd not found: {cwd}");
 
         if (req.Agent is not null && !AgentCatalog.IsKnown(req.Agent))
-            return KamuiResponse.Fail($"unknown agent: {req.Agent}. try: grok, claude, codex, pi, shell");
+            return KamuiResponse.Fail($"unknown agent: {req.Agent}. try: grok, claude, codex, pi, jcode, shell");
 
         var agent = AgentCatalog.Normalize(req.Agent);
         var created = new List<KamuiTabInfo>();

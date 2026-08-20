@@ -3,12 +3,12 @@ using System.IO;
 namespace KamuiT;
 
 /// <summary>
-/// Resolve nomes de agentes (grok, claude, codex, pi, shell) para o comando
+/// Resolve nomes de agentes (grok, claude, codex, pi, jcode, shell) para o comando
 /// que a aba deve rodar depois do init do PowerShell.
 /// </summary>
 public static class AgentCatalog
 {
-    public static readonly string[] KnownAgents = ["grok", "claude", "codex", "pi", "shell", "pwsh", "none"];
+    public static readonly string[] KnownAgents = ["grok", "claude", "codex", "pi", "jcode", "shell", "pwsh", "none"];
 
     /// <summary>
     /// Normaliza alias → id canônico. null/vazio/"shell"/"pwsh"/"none" → só shell.
@@ -26,6 +26,7 @@ public static class AgentCatalog
             "c" or "claude" or "claude-code" or "anthropic" => "claude",
             "x" or "codex" or "openai" => "codex",
             "p" or "pi" => "pi",
+            "j" or "jcode" or "j-code" => "jcode",
             _ => a, // permite comando custom no PATH
         };
     }
@@ -55,6 +56,10 @@ public static class AgentCatalog
             "pi" => FirstExisting(
                 Path.Combine(roaming, "npm", "pi.cmd"),
                 Path.Combine(roaming, "npm", "pi.ps1")),
+            "jcode" => FirstExisting(
+                Path.Combine(local, "jcode", "bin", "jcode.exe"),
+                Path.Combine(home, ".local", "bin", "jcode.exe"),
+                Path.Combine(roaming, "npm", "jcode.cmd")),
             _ => null,
         };
     }
@@ -71,11 +76,30 @@ public static class AgentCatalog
 
         var path = ResolvePath(id);
         if (path is not null)
-            return "& '" + path.Replace("'", "''") + "'";
+        {
+            var exe = "& '" + path.Replace("'", "''") + "'";
+            // jcode: força profile 9router (config em ~/.jcode/config.toml).
+            // Garante NINE_ROUTER_API_KEY do User env se o processo atual não herdou.
+            if (id == "jcode")
+            {
+                return "if (-not $env:NINE_ROUTER_API_KEY) { $env:NINE_ROUTER_API_KEY = [Environment]::GetEnvironmentVariable('NINE_ROUTER_API_KEY','User') }; " +
+                       "Remove-Item Env:OPENROUTER_API_KEY -ErrorAction SilentlyContinue; " +
+                       exe + " --provider-profile 9router";
+            }
+            return exe;
+        }
 
         // fallback: nome no PATH (sem metachar)
         if (id.All(c => char.IsLetterOrDigit(c) || c is '-' or '_' or '.'))
+        {
+            if (id == "jcode")
+            {
+                return "if (-not $env:NINE_ROUTER_API_KEY) { $env:NINE_ROUTER_API_KEY = [Environment]::GetEnvironmentVariable('NINE_ROUTER_API_KEY','User') }; " +
+                       "Remove-Item Env:OPENROUTER_API_KEY -ErrorAction SilentlyContinue; " +
+                       "jcode --provider-profile 9router";
+            }
             return id;
+        }
 
         return null;
     }

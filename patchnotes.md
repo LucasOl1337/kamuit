@@ -44,7 +44,7 @@ The first working build of KamuiT, the native successor to TerminalDE.
 - **Native terminal engine** — embeds the official Windows Terminal core (ConPTY + AtlasEngine) via `EasyWindowsTerminalControl` 1.0.38. No Electron, no xterm.js.
 - **Tabs** — `Ctrl+Shift+T` new · `Ctrl+Tab`/`Ctrl+Shift+Tab` cycle · `Ctrl+Shift+W` close (kills the shell, no orphans) · `Ctrl+1..9` jump-or-create
 - **Live tab titles** — OSC title sequences from the session drive tab labels (Grok's "Waiting for response…" / "Thinking…" show up)
-- **Quick CD** — `Alt+1` Desktop · `Alt+2` `C:\projetos`
+- **Quick CD** — `Alt+1` Desktop · `Alt+2` `C:\projetos` · `Alt+3` `C:\NexUnio` · `Alt+4` NexSales · `Alt+5` sfr-resgate-digital
 - **Limbo** — `Ctrl+Shift+X` hides a tab without killing the shell · `Ctrl+Shift+L` popup to restore
 - **Agent-ready sounds** — Grok + Claude `Stop` hooks, Pi extension; plays `SoundEffects/Terminal{N}.mp3` per tab. Passive design: no polling, no scraping, nothing inside the shell
 - **Global `Ctrl+Space`** — summon/hide from anywhere, with retry while another app holds the hotkey

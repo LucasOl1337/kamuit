@@ -76,7 +76,7 @@ public partial class App : Application
 
         var op = args[0].Trim().ToLowerInvariant();
         // "KamuiT.exe grok" atalho
-        if (op is "grok" or "claude" or "codex" or "pi" or "shell")
+        if (op is "grok" or "claude" or "codex" or "pi" or "jcode" or "shell")
             return new KamuiRequest { Op = "open", Agent = op, Count = 1, Show = true };
 
         if (op is not ("open" or "new" or "tab" or "list" or "show" or "focus" or "type" or "ping" or "close" or "agents"))
