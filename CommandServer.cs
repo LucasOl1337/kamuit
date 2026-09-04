@@ -1,26 +1,33 @@
 using System.IO;
 using System.IO.Pipes;
 using System.Text;
-using System.Windows.Threading;
 
 namespace KamuiT;
 
 /// <summary>
-/// Named pipe server <c>\\.\pipe\kamuit</c> — cada linha JSON é um request,
-/// resposta é uma linha JSON. Roda em background; handlers no UI thread.
+/// Named pipe server — cada linha JSON é um request, resposta é uma linha JSON.
+/// Windows: <c>\\.\pipe\kamuit</c>. Linux: socket em <c>$XDG_RUNTIME_DIR/kamuit.sock</c>.
+/// Roda em background; handlers no UI thread via <paramref name="invokeOnUi"/>.
 /// </summary>
 public sealed class CommandServer : IDisposable
 {
-    public const string PipeName = "kamuit";
+    public static string PipeName { get; } = OperatingSystem.IsWindows()
+        ? "kamuit"
+        : Path.Combine(
+            Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR")
+            ?? Path.GetTempPath(),
+            "kamuit.sock");
 
-    private readonly Dispatcher _dispatcher;
+    private readonly Func<Func<KamuiResponse>, Task<KamuiResponse>> _invokeOnUi;
     private readonly Func<KamuiRequest, KamuiResponse> _handler;
     private CancellationTokenSource? _cts;
     private Task? _loop;
 
-    public CommandServer(Dispatcher dispatcher, Func<KamuiRequest, KamuiResponse> handler)
+    public CommandServer(
+        Func<Func<KamuiResponse>, Task<KamuiResponse>> invokeOnUi,
+        Func<KamuiRequest, KamuiResponse> handler)
     {
-        _dispatcher = dispatcher;
+        _invokeOnUi = invokeOnUi;
         _handler = handler;
     }
 
@@ -47,6 +54,14 @@ public sealed class CommandServer : IDisposable
             NamedPipeServerStream? pipe = null;
             try
             {
+                if (!OperatingSystem.IsWindows())
+                {
+                    try { File.Delete(PipeName); } catch { /* stale socket */ }
+                    var dir = Path.GetDirectoryName(PipeName);
+                    if (!string.IsNullOrEmpty(dir))
+                        Directory.CreateDirectory(dir);
+                }
+
                 pipe = new NamedPipeServerStream(
                     PipeName,
                     PipeDirection.InOut,
@@ -97,12 +112,12 @@ public sealed class CommandServer : IDisposable
                 {
                     var req = KamuiJson.Deserialize<KamuiRequest>(line)
                               ?? new KamuiRequest { Op = "" };
-                    // UI thread — tabs/WPF
-                    response = await _dispatcher.InvokeAsync(() =>
+                    // UI thread — tabs (WPF Dispatcher ou Gtk SynchronizationContext)
+                    response = await _invokeOnUi(() =>
                     {
                         try { return _handler(req); }
                         catch (Exception ex) { return KamuiResponse.Fail(ex.Message); }
-                    }).Task.ConfigureAwait(false);
+                    }).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

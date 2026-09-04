@@ -113,7 +113,9 @@ public partial class MainWindow : Window
         AgentReadyService.InstallHooks();
         InstallShellInitScript();
 
-        _commandServer = new CommandServer(Dispatcher, HandleCommand);
+        _commandServer = new CommandServer(
+            f => Dispatcher.InvokeAsync(() => f()).Task,
+            HandleCommand);
         _commandServer.Start();
 
         SourceInitialized += OnSourceInitialized;

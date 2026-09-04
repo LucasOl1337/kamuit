@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>KamuiT</RootNamespace>
+    <AssemblyName>KamuiT</AssemblyName>
+    <Version>0.3.0</Version>
+    <RuntimeIdentifiers>linux-x64;linux-arm64</RuntimeIdentifiers>
+    <Description>KamuiT Linux host — GTK4 + VTE</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\KamuiProtocol.cs" Link="Shared\KamuiProtocol.cs" />
+    <Compile Include="..\OscTitleScanner.cs" Link="Shared\OscTitleScanner.cs" />
+    <Compile Include="..\AgentCatalog.cs" Link="Shared\AgentCatalog.cs" />
+    <Compile Include="..\CommandServer.cs" Link="Shared\CommandServer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\SoundEffects\*.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>SoundEffects\%(Filename)%(Extension)</Link>
+    </Content>
+    <Content Include="..\scripts\*.mjs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>scripts\%(Filename)%(Extension)</Link>
+    </Content>
+    <Content Include="..\scripts\*.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>scripts\%(Filename)%(Extension)</Link>
+    </Content>
+    <Content Include="..\scripts\kamuit.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>scripts\kamuit.sh</Link>
+    </Content>
+    <Content Include="..\scripts\kamuit-shell-init.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>scripts\kamuit-shell-init.sh</Link>
+    </Content>
+    <Content Include="..\scripts\install-linux.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>scripts\install-linux.sh</Link>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GirCore.Gtk-4.0" Version="0.8.1" />
+  </ItemGroup>
+
+</Project>

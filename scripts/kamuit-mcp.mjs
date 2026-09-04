@@ -12,15 +12,20 @@
  */
 import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
-import { homedir } from "node:os";
+import { homedir, platform } from "node:os";
 import { join } from "node:path";
 import { existsSync } from "node:fs";
+import net from "node:net";
 
 const KAMUIT_PS1_CANDIDATES = [
   join(homedir(), ".local", "bin", "kamuit.ps1"),
   "C:\\Projetos\\KamuiT\\scripts\\kamuit.ps1",
   join(homedir(), ".kamuit", "kamuit.ps1"),
 ];
+
+function linuxSock() {
+  return join(process.env.XDG_RUNTIME_DIR || "/tmp", "kamuit.sock");
+}
 
 function findKamuitPs1() {
   for (const p of KAMUIT_PS1_CANDIDATES) {
@@ -29,7 +34,57 @@ function findKamuitPs1() {
   return KAMUIT_PS1_CANDIDATES[0];
 }
 
+function sendUnix(req, timeoutMs = 15000) {
+  return new Promise((resolve, reject) => {
+    const sock = net.createConnection(linuxSock());
+    const t = setTimeout(() => {
+      sock.destroy();
+      reject(new Error(`kamuit timeout after ${timeoutMs}ms`));
+    }, timeoutMs);
+    let buf = "";
+    sock.setEncoding("utf8");
+    sock.on("data", (d) => {
+      buf += d;
+      if (buf.includes("\n")) {
+        clearTimeout(t);
+        sock.end();
+        try {
+          resolve(JSON.parse(buf.trim().split(/\r?\n/).filter(Boolean).pop()));
+        } catch {
+          resolve({ ok: false, raw: buf });
+        }
+      }
+    });
+    sock.on("error", (e) => {
+      clearTimeout(t);
+      reject(e);
+    });
+    sock.on("connect", () => sock.write(JSON.stringify(req) + "\n"));
+  });
+}
+
+function argsToRequest(args) {
+  const req = { op: args[0] };
+  for (let i = 1; i < args.length; i++) {
+    const a = args[i];
+    if ((a === "-C" || a === "--cwd") && args[i + 1]) req.cwd = args[++i];
+    else if ((a === "-n" || a === "--count") && args[i + 1]) req.count = Number(args[++i]);
+    else if ((a === "-Slot" || a === "-s") && args[i + 1]) req.slot = Number(args[++i]);
+    else if ((a === "-Text" || a === "-t") && args[i + 1]) req.text = args[++i];
+    else if (a === "-Enter") req.enter = true;
+    else if (a === "--no-show") req.show = false;
+    else if ((req.op === "open" || req.op === "new") && !req.agent) req.agent = a;
+    else if ((req.op === "focus" || req.op === "close") && /^\d+$/.test(a)) req.slot = Number(a);
+    else if ((req.op === "focus" || req.op === "close") && !req.id) req.id = a;
+  }
+  if (req.op === "open") req.show = req.show !== false;
+  return req;
+}
+
 function runKamuit(args, timeoutMs = 15000) {
+  if (platform() !== "win32") {
+    return sendUnix(argsToRequest(args), timeoutMs);
+  }
   return new Promise((resolve, reject) => {
     const ps1 = findKamuitPs1();
     const child = spawn(

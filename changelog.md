@@ -2,6 +2,26 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [0.3.0] — 2026-09-04 — porte Linux
+
+### Added
+
+- Host Linux (`linux/KamuiT.Linux.csproj`): GTK 4 + VTE, abas, limbo, project pack, CLI/MCP, sons de ready.
+- Socket POSIX `$XDG_RUNTIME_DIR/kamuit.sock` (mesmo JSON-lines do named pipe Windows).
+- `scripts/kamuit.sh`, `scripts/kamuit-shell-init.sh`, `scripts/install-linux.sh`.
+- CI GitHub Actions em `windows-latest` e `ubuntu-latest`.
+- README e tópicos do repositório passam a declarar Windows e Linux.
+
+### Changed
+
+- `CommandServer` deixa de depender do WPF Dispatcher; o marshal vai para a UI thread via delegate.
+- `AgentCatalog` resolve executáveis também em `~/.local/bin` / PATH no Linux.
+- `KamuiRequest.ParseCli` é a CLI compartilhada.
+
+### Validation
+
+- Compilação Windows e Linux neste PC (Windows). Runtime gráfico Linux e máquina OMART: não verificados aqui.
+
 ## [0.2.0] — 2026-07-27 — agent-first safe commit
 
 ### Added

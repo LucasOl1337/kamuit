@@ -40,28 +40,74 @@ public static class AgentCatalog
         var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var roaming = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
-        return agentId switch
-        {
-            "grok" => FirstExisting(
-                Path.Combine(home, ".grok", "bin", "grok.exe"),
-                Path.Combine(home, ".local", "bin", "grok.exe")),
-            "claude" => FirstExisting(
-                Path.Combine(roaming, "npm", "claude.cmd"),
-                Path.Combine(roaming, "npm", "claude.ps1"),
-                Path.Combine(local, "AnthropicClaude", "claude.exe")),
-            "codex" => FirstExisting(
-                Path.Combine(roaming, "npm", "codex.cmd"),
-                Path.Combine(roaming, "npm", "codex.ps1"),
-                Path.Combine(home, ".local", "bin", "codex.exe")),
-            "pi" => FirstExisting(
-                Path.Combine(roaming, "npm", "pi.cmd"),
-                Path.Combine(roaming, "npm", "pi.ps1")),
-            "jcode" => FirstExisting(
-                Path.Combine(local, "jcode", "bin", "jcode.exe"),
-                Path.Combine(home, ".local", "bin", "jcode.exe"),
-                Path.Combine(roaming, "npm", "jcode.cmd")),
-            _ => null,
-        };
+        string? found = OperatingSystem.IsWindows()
+            ? agentId switch
+            {
+                "grok" => FirstExisting(
+                    Path.Combine(home, ".grok", "bin", "grok.exe"),
+                    Path.Combine(home, ".local", "bin", "grok.exe")),
+                "claude" => FirstExisting(
+                    Path.Combine(roaming, "npm", "claude.cmd"),
+                    Path.Combine(roaming, "npm", "claude.ps1"),
+                    Path.Combine(local, "AnthropicClaude", "claude.exe")),
+                "codex" => FirstExisting(
+                    Path.Combine(roaming, "npm", "codex.cmd"),
+                    Path.Combine(roaming, "npm", "codex.ps1"),
+                    Path.Combine(home, ".local", "bin", "codex.exe")),
+                "pi" => FirstExisting(
+                    Path.Combine(roaming, "npm", "pi.cmd"),
+                    Path.Combine(roaming, "npm", "pi.ps1")),
+                "jcode" => FirstExisting(
+                    Path.Combine(local, "jcode", "bin", "jcode.exe"),
+                    Path.Combine(home, ".local", "bin", "jcode.exe"),
+                    Path.Combine(roaming, "npm", "jcode.cmd")),
+                _ => null,
+            }
+            : agentId switch
+            {
+                "grok" => FirstExisting(
+                    Path.Combine(home, ".grok", "bin", "grok"),
+                    Path.Combine(home, ".local", "bin", "grok")),
+                "claude" => FirstExisting(
+                    Path.Combine(home, ".local", "bin", "claude"),
+                    Path.Combine(home, ".npm-global", "bin", "claude")),
+                "codex" => FirstExisting(
+                    Path.Combine(home, ".local", "bin", "codex"),
+                    Path.Combine(home, ".npm-global", "bin", "codex")),
+                "pi" => FirstExisting(
+                    Path.Combine(home, ".local", "bin", "pi"),
+                    Path.Combine(home, ".npm-global", "bin", "pi")),
+                "jcode" => FirstExisting(
+                    Path.Combine(home, ".local", "bin", "jcode"),
+                    Path.Combine(home, ".npm-global", "bin", "jcode")),
+                _ => null,
+            };
+
+        return found ?? FindOnPath(agentId);
+    }
+
+    /// <summary>
+    /// Comando POSIX seguro pra lançar o agente no shell do Linux
+    /// (após init). null = só shell.
+    /// </summary>
+    public static string? BuildUnixLaunchCommand(string? agent)
+    {
+        var id = Normalize(agent);
+        if (id is null)
+            return null;
+
+        var path = ResolvePath(id);
+        string cmd;
+        if (path is not null)
+            cmd = "'" + path.Replace("'", "'\\''") + "'";
+        else if (id.All(c => char.IsLetterOrDigit(c) || c is '-' or '_' or '.'))
+            cmd = id;
+        else
+            return null;
+
+        if (id == "jcode")
+            cmd += " --provider-profile 9router";
+        return cmd;
     }
 
     /// <summary>
@@ -117,6 +163,26 @@ public static class AgentCatalog
         {
             if (!string.IsNullOrWhiteSpace(p) && File.Exists(p))
                 return p;
+        }
+        return null;
+    }
+
+    private static string? FindOnPath(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return null;
+        var path = Environment.GetEnvironmentVariable("PATH") ?? "";
+        var exts = OperatingSystem.IsWindows()
+            ? new[] { ".exe", ".cmd", ".bat", "" }
+            : new[] { "" };
+        foreach (var dir in path.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
+        {
+            foreach (var ext in exts)
+            {
+                var candidate = Path.Combine(dir, name + ext);
+                if (File.Exists(candidate))
+                    return candidate;
+            }
         }
         return null;
     }

@@ -9,8 +9,14 @@
     <ApplicationIcon>kamuit.ico</ApplicationIcon>
     <RootNamespace>KamuiT</RootNamespace>
     <AssemblyName>KamuiT</AssemblyName>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="linux\**" />
+    <EmbeddedResource Remove="linux\**" />
+    <None Remove="linux\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Resource Include="kamuit.ico" />

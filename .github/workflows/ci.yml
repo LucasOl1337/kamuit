@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "agent/**"]
+  pull_request:
+
+jobs:
+  windows:
+    name: Windows (WPF)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Publish win-x64
+        run: dotnet publish KamuiT.csproj -c Release -r win-x64 --self-contained false -o publish --nologo
+
+  linux:
+    name: Linux (GTK4 + VTE)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Native deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-4-1 libgtk-4-dev libvte-2.91-gtk4-0 \
+            || sudo apt-get install -y libgtk-4-1 libgtk-4-dev libvte-2.91-0
+      - name: Publish linux-x64
+        run: dotnet publish linux/KamuiT.Linux.csproj -c Release -r linux-x64 --self-contained false -o publish-linux --nologo
+      - name: Smoke --help (sem display)
+        run: ./publish-linux/KamuiT --help
+      - name: Smoke --version
+        run: ./publish-linux/KamuiT --version
