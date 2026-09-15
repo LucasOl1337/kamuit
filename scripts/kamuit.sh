@@ -69,6 +69,7 @@ KamuiT CLI — controla o workspace de agentes (Linux)
   kamuit focus <slot|id>
   kamuit type <slot> <text> [--enter]
   kamuit close [slot]
+  kamuit limbo [slot]
   kamuit show
   kamuit agents
   kamuit ping
@@ -104,7 +105,7 @@ while [[ $# -gt 0 ]]; do
     -*) shift ;;
     *)
       if [[ "$op" == "open" && -z "$agent" ]]; then agent="$1"
-      elif [[ "$op" =~ ^(focus|close)$ && -z "$slot" && -z "$id" ]]; then
+      elif [[ "$op" =~ ^(focus|close|limbo|hide)$ && -z "$slot" && -z "$id" ]]; then
         if [[ "$1" =~ ^[0-9]+$ ]]; then slot="$1"; else id="$1"; fi
       elif [[ "$op" == "type" && -z "$text" ]]; then
         if [[ "$1" =~ ^[0-9]+$ && -z "$slot" ]]; then slot="$1"; else text="$1"; fi

@@ -13,13 +13,24 @@ internal static class LinuxPaths
             Path.Combine(Home, "Área de Trabalho"))
         ?? Home;
 
-    public static string ProjectsRoot { get; } =
-        FirstExistingDir(
+    /// <summary>
+    /// Root do project pack / aba inicial. <c>KAMUIT_PROJECTS_ROOT</c> ganha
+    /// (demo, testes, bancada) e não precisa existir de antemão.
+    /// </summary>
+    public static string ProjectsRoot { get; } = ResolveProjectsRoot();
+
+    private static string ResolveProjectsRoot()
+    {
+        var env = Environment.GetEnvironmentVariable("KAMUIT_PROJECTS_ROOT");
+        if (!string.IsNullOrWhiteSpace(env))
+            return env;
+        return FirstExistingDir(
             Path.Combine(Home, "projetos"),
             Path.Combine(Home, "Projetos"),
             Path.Combine(Home, "projects"),
             Path.Combine(Home, "Projects"))
-        ?? Home;
+            ?? Home;
+    }
 
     public static string NexUnioRoot { get; } =
         FirstExistingDir(
@@ -34,8 +45,15 @@ internal static class LinuxPaths
 
     public static string KamuitDir { get; } = Path.Combine(Home, ".kamuit");
 
-    public static string ShellInitPath { get; } =
-        Path.Combine(KamuitDir, "kamuit-shell-init.sh");
+    public static string ShellInitPath { get; } = ResolveShellInitPath();
+
+    private static string ResolveShellInitPath()
+    {
+        var env = Environment.GetEnvironmentVariable("KAMUIT_SHELL_INIT");
+        if (!string.IsNullOrWhiteSpace(env))
+            return env;
+        return Path.Combine(KamuitDir, "kamuit-shell-init.sh");
+    }
 
     public static string Shell { get; } =
         Environment.GetEnvironmentVariable("SHELL") is { Length: > 0 } s && File.Exists(s)
@@ -44,6 +62,8 @@ internal static class LinuxPaths
 
     public static void InstallShellInit()
     {
+        if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("KAMUIT_SHELL_INIT")))
+            return;
         try
         {
             var src = Path.Combine(AppContext.BaseDirectory, "scripts", "kamuit-shell-init.sh");

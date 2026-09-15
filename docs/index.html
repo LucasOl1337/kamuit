@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KamuiT: workspace nativo de agentes</title>
+<meta name="description" content="Workspace nativo de terminais para Grok, Claude, Codex e Pi. Sucessor do TerminalDE. Windows (WPF + Windows Terminal) e Linux (GTK 4 + VTE). CLI, MCP, limbo e project pack.">
+<meta property="og:title" content="KamuiT: workspace nativo de agentes">
+<meta property="og:description" content="Abas que nascem já no agente. CLI e MCP no mesmo workspace. Windows e Linux.">
+<meta property="og:image" content="media/poster.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" href="media/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0c0c;--sf:#181818;--sf2:#201414;--sf3:#2a2a2a;--bd:#2a2a2a;--bds:#3a3a3a;
+  --ink:#eeeeee;--ink2:#c8c8c8;--ink3:#9a9a9a;--acc:#c4161c;--acch:#a01218;--acct:#e06060;--gra:#0c0c0c;
+  --max:1120px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,"Noto Sans","Segoe UI",system-ui,sans-serif;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--acct);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+code,.mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.brand{display:flex;align-items:center;gap:12px;font-weight:600;letter-spacing:.18em;font-size:14px;color:var(--ink)}
+.brand img{width:34px;height:34px;border-radius:9px}
+.nav .links{display:flex;gap:22px;font-size:14px;color:var(--ink3)}
+.nav .links a{color:var(--ink3)}.nav .links a:hover{color:var(--ink);text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:12px;font-weight:600;font-size:15px;border:1px solid transparent;transition:.15s}
+.btn.acc{background:var(--acc);color:#fff}.btn.acc:hover{background:var(--acch);text-decoration:none}
+.btn.ghost{border-color:var(--bds);color:var(--ink2)}.btn.ghost:hover{background:var(--sf3);text-decoration:none;color:var(--ink)}
+.hero{padding:70px 0 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.k{font-size:13px;letter-spacing:.26em;font-weight:600;color:var(--ink3);text-transform:uppercase;margin:0 0 18px}
+h1{font-size:clamp(44px,6.2vw,76px);line-height:1.02;letter-spacing:-.025em;margin:0 0 22px;font-weight:800}
+h1 b{color:var(--acc);font-weight:800}
+.lead{font-size:20px;color:var(--ink2);max-width:520px;margin:0 0 30px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.cta small{color:var(--ink3);font-size:13px;width:100%;margin-top:4px}
+.video{position:relative;border-radius:16px;overflow:hidden;background:#000;border:1px solid var(--bd);box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.video video{display:block;width:100%;height:auto}
+.vcap{color:var(--ink3);font-size:13.5px;margin:10px 0 0}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:56px 0 0}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:26px 26px 24px}
+.card h3{margin:14px 0 8px;font-size:20px;letter-spacing:-.01em}
+.card p{margin:0;color:var(--ink3);font-size:15.5px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 8px rgba(196,22,28,.16)}
+section{padding:84px 0 0}
+h2{font-size:clamp(30px,4vw,44px);line-height:1.08;letter-spacing:-.02em;margin:0 0 14px;font-weight:800}
+.sub{color:var(--ink3);font-size:18px;max-width:640px;margin:0 0 34px}
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;margin-top:40px}
+.feat.rev .shot{order:-1}
+.feat h3{font-size:26px;letter-spacing:-.015em;margin:0 0 10px}
+.feat p{color:var(--ink2);margin:0 0 12px}
+.feat ul{margin:12px 0 0;padding-left:18px;color:var(--ink2)}
+.feat li{margin:6px 0}
+.shot{border-radius:14px;overflow:hidden;border:1px solid var(--bd);background:var(--sf);box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.shot img{display:block;width:100%;height:auto}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:36px}
+.step{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:22px}
+.step .n{font-family:"JetBrains Mono",monospace;color:var(--acct);font-size:13px;margin-bottom:10px}
+.step h4{margin:0 0 6px;font-size:17px}.step p{margin:0;color:var(--ink3);font-size:14.5px}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:36px}
+.num{background:var(--sf2);border-radius:14px;padding:22px;border:1px solid #3a2020}
+.num b{display:block;font-size:34px;letter-spacing:-.02em;font-weight:800}
+.num span{color:var(--ink3);font-size:14px}
+table{width:100%;border-collapse:collapse;margin-top:34px;background:var(--sf);border:1px solid var(--bd);border-radius:16px;overflow:hidden}
+th,td{padding:15px 18px;text-align:left;border-bottom:1px solid var(--bd);font-size:15.5px;vertical-align:top}
+th{color:var(--ink3);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;background:var(--sf2)}
+tr:last-child td{border-bottom:0}
+td.y{color:var(--ink)}td.n{color:var(--ink3)}
+td:first-child{color:var(--ink2);width:22%}
+.foot-note{color:var(--ink3);font-size:13.5px;margin-top:12px}
+pre{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:20px 22px;overflow:auto;font-size:14px;line-height:1.6;color:var(--ink2);margin:0}
+pre .c{color:var(--ink3)}pre .a{color:var(--acct)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:30px}
+.two h4{margin:0 0 10px;font-size:14px;letter-spacing:.16em;color:var(--ink3);text-transform:uppercase}
+footer{margin-top:96px;padding:40px 0 60px;border-top:1px solid var(--bd);color:var(--ink3);font-size:14px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;padding-top:36px}
+  .pillars,.flow,.nums,.two{grid-template-columns:1fr 1fr}
+  .feat{grid-template-columns:1fr}.feat.rev .shot{order:0}
+  .nav .links{display:none}
+}
+@media (max-width:560px){.pillars,.flow,.nums,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="brand" href="#"><img src="media/logo.png" alt="">KAMUIT</a>
+    <div class="links">
+      <a href="#como">Como funciona</a><a href="#telas">Telas</a><a href="#numeros">Números</a><a href="#compare">Comparar</a><a href="#instalar">Instalar</a>
+      <a href="https://github.com/LucasOl1337/kamuit">GitHub ↗</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <p class="k">Workspace nativo · Grok Claude Codex Pi</p>
+      <h1>A aba já nasce<br>no <b>agente</b>.</h1>
+      <p class="lead">KamuiT é o sucessor do TerminalDE: um workspace de terminais feito pra Grok, Claude, Codex e Pi. CLI e MCP falam com a janela viva. Windows e Linux.</p>
+      <div class="cta">
+        <a class="btn acc" href="#instalar">Instalar</a>
+        <a class="btn ghost" href="https://github.com/LucasOl1337/kamuit">Ver o código</a>
+        <small>Atualizado em 15 de setembro de 2026. v0.3.0. Código no GitHub. Sem loja, sem nuvem do app.</small>
+      </div>
+    </div>
+    <div>
+      <div class="video">
+        <video controls playsinline preload="metadata" poster="media/poster.jpg">
+          <source src="media/kamuit-promo-web.mp4" type="video/mp4">
+        </video>
+      </div>
+      <p class="vcap">App real, host Linux GTK 4 + VTE nesta máquina. Narração: Lucas Oliveira, OFICIAL #1. Sessões de agente da vitrine são isoladas, sem a conta do humano.</p>
+    </div>
+  </header>
+
+  <div class="pillars">
+    <div class="card reveal"><div class="dot"></div><h3>Agent-first</h3><p><code>kamuit open grok</code> abre a aba já no agente, no folder certo. Ctrl+Shift+G/C/D/P faz o mesmo pelo teclado.</p></div>
+    <div class="card reveal"><div class="dot"></div><h3>Um protocolo</h3><p>JSON-lines no named pipe (Windows) ou no socket POSIX (Linux). A CLI e o MCP mandam open, type, list, limbo.</p></div>
+    <div class="card reveal"><div class="dot"></div><h3>Nativo nos dois</h3><p>WPF + Windows Terminal core no Windows. GTK 4 + VTE no Linux. Mesma CLI, mesmos agentes.</p></div>
+  </div>
+
+  <section id="como">
+    <h2>Como funciona</h2>
+    <p class="sub">O host segura as abas. O agente é um processo no PTY. Você manda comando de fora, ou aperta o atalho.</p>
+    <div class="flow">
+      <div class="step"><div class="n">01</div><h4>Sobe o host</h4><p>Uma janela. Single-instance: a segunda abertura só encaminha o comando.</p></div>
+      <div class="step"><div class="n">02</div><h4>Abre no agente</h4><p><code>kamuit open grok -C pasta -n 2</code> ou Ctrl+Shift+G. A aba já nasce lá.</p></div>
+      <div class="step"><div class="n">03</div><h4>Pack e atalhos</h4><p>Ctrl+Shift+O lista as pastas do root de projetos e abre N abas já no folder.</p></div>
+      <div class="step"><div class="n">04</div><h4>Limbo</h4><p>Ctrl+Shift+X esconde sem matar o PTY. Ctrl+Shift+L restaura. A sessão continua viva.</p></div>
+    </div>
+  </section>
+
+  <section id="telas">
+    <h2>Por dentro</h2>
+    <p class="sub">Capturas reais do host Linux nesta máquina, 15/09/2026. Fundo #0c0c0c, aba ativa com a linha vermelha.</p>
+
+    <div class="feat">
+      <div class="shot reveal"><img src="media/workspace.png" alt="KamuiT com uma aba de shell listando pastas de projeto"></div>
+      <div>
+        <h3>Workspace</h3>
+        <p>A aba inicial já está no root de projetos. VTE no Linux, Windows Terminal core no Windows. Prompt e título acompanham o folder.</p>
+        <ul>
+          <li>Ctrl+Shift+T abre shell</li>
+          <li>Alt+1 Desktop, Alt+2 projetos</li>
+          <li>Ctrl+1..9 salta pra aba N</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feat rev">
+      <div class="shot reveal"><img src="media/grok.png" alt="Aba grok · kamuit-demo aberta pelo CLI"></div>
+      <div>
+        <h3>Aba já no agente</h3>
+        <p><code>kamuit open grok -C kamuit-demo</code> cria a aba com o título <code>grok · kamuit-demo</code> e o cwd certo. Sem colar o comando na mão.</p>
+        <ul>
+          <li>Grok, Claude, Codex, Pi, jcode, shell</li>
+          <li>O binário vem do PATH, ou de <code>KAMUIT_AGENT_BIN_DIR</code> em demo/teste</li>
+          <li>Na vitrine as sessões de agente são isoladas, sem a conta do humano</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feat">
+      <div class="shot reveal"><img src="media/agentes.png" alt="Várias abas de agentes no mesmo workspace"></div>
+      <div>
+        <h3>Vários agentes, uma janela</h3>
+        <p>Cada aba é um PTY. Ctrl+Tab circular. O som de ready toca no slot visual quando o agente avisa que terminou.</p>
+        <ul>
+          <li>Ctrl+Shift+G/C/D/P pra Grok/Claude/Codex/Pi</li>
+          <li>MCP em <code>scripts/kamuit-mcp.mjs</code></li>
+          <li>Single-instance: o segundo KamuiT só manda JSON</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="feat rev">
+      <div class="shot reveal"><img src="media/pack.png" alt="Diálogo Abrir projeto com pastas e contagem de abas"></div>
+      <div>
+        <h3>Project pack</h3>
+        <p>Ctrl+Shift+O. Lista as pastas do root, escolhe quantas abas, abre já no folder. O root no Linux é <code>~/projetos</code> (ou <code>KAMUIT_PROJECTS_ROOT</code>).</p>
+      </div>
+    </div>
+
+    <div class="feat">
+      <div class="shot reveal"><img src="media/limbo.png" alt="Limbo com uma sessão grok em espera e botão Restaurar"></div>
+      <div>
+        <h3>Limbo</h3>
+        <p>Esconde a aba sem matar o processo. A sessão continua no PTY. Ctrl+Shift+L traz de volta. Também existe op <code>limbo</code> no protocolo.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="numeros">
+    <h2>Números medidos</h2>
+    <p class="sub">Host Linux GTK 4 + VTE nesta Omarchy, socket POSIX da instância de demonstração, 15/09/2026.</p>
+    <div class="nums">
+      <div class="num"><b>0,2 ms</b><span>ping mediana (n=30)</span></div>
+      <div class="num"><b>37 ms</b><span>abrir aba, mediana (n=8)</span></div>
+      <div class="num"><b>9 ops</b><span>open list focus type close show ping agents limbo</span></div>
+      <div class="num"><b>2 hosts</b><span>WPF+WT e GTK4+VTE</span></div>
+    </div>
+    <p class="foot-note">Ping p95 0,68 ms. Abrir aba p95 71 ms (cria a aba GTK, spawna o VTE). Medido com 30 pings e 8 <code>open shell</code> no socket da bancada <code>kamuit-promo</code>. Versão do binário: 0.3.0. Fonte: <a href="https://github.com/LucasOl1337/kamuit/blob/main/changelog.md">changelog 0.3.0 (04/09/2026)</a> e esta medição.</p>
+  </section>
+
+  <section id="compare">
+    <h2>KamuiT, Windows Terminal, Warp, tmux</h2>
+    <p class="sub">KamuiT não quer ser o emulador mais rápido. Quer ser o workspace onde os agentes já moram.</p>
+    <table>
+      <thead><tr><th></th><th>KamuiT</th><th>Windows Terminal</th><th>Warp</th><th>tmux</th></tr></thead>
+      <tbody>
+        <tr><td>Abas já no agente (Grok/Claude/Codex/Pi)</td><td class="y">Sim. CLI, MCP e atalho.</td><td class="n">Não no WT estável. Intelligent Terminal 0.1 (02/06/2026) é fork experimental.</td><td class="n">Agente dentro do Warp, não o CLI que você já usa na aba.</td><td class="n">Não. É multiplexer.</td></tr>
+        <tr><td>Windows e Linux</td><td class="y">WPF+WT e GTK4+VTE, mesmo protocolo.</td><td class="n">Windows 10/11. Sem Linux nativo.</td><td class="y">App próprio, vários sistemas.</td><td class="y">Unix-like.</td></tr>
+        <tr><td>CLI / MCP na janela viva</td><td class="y">JSON-lines. 9 ops.</td><td class="n">wt.exe abre perfis. Sem MCP de workspace de agentes.</td><td class="n">Cloud agents e Warp Drive. Não é o teu Grok/Claude local.</td><td class="y"><code>tmux send-keys</code>. Sem MCP, sem GUI.</td></tr>
+        <tr><td>Limbo (esconde sem matar o PTY)</td><td class="y">Ctrl+Shift+X / op limbo.</td><td class="n">Fecha a aba, mata o processo.</td><td class="n">Não é o modelo.</td><td class="y">Detach da sessão, outro problema.</td></tr>
+        <tr><td>Onde roda o agente</td><td class="y">No teu PC, o binário que você já tem.</td><td class="y">O que você lançar no perfil.</td><td class="n">Agente Warp + créditos. Cloud conversation storage no plano pago.</td><td class="y">O que você lançar no pane.</td></tr>
+        <tr><td>Preço</td><td class="y">Grátis. Código no GitHub.</td><td class="y">Grátis, MIT.</td><td class="n">Free limitado; Build US$ 20/mês (página de preços em 15/09/2026).</td><td class="y">Grátis, ISC.</td></tr>
+      </tbody>
+    </table>
+    <p class="foot-note">
+      Fatos datados: KamuiT <a href="https://github.com/LucasOl1337/kamuit/blob/main/changelog.md">changelog 0.3.0, 04/09/2026</a> e medição local 15/09/2026.
+      Windows Terminal: <a href="https://en.wikipedia.org/wiki/Windows_Terminal">Wikipedia, estável v1.24.11911 em 16/07/2026</a>; Intelligent Terminal 0.1 anunciado em <a href="https://devblogs.microsoft.com/commandline/announcing-intelligent-terminal-version-0-1/">02/06/2026</a> como fork experimental.
+      Warp: <a href="https://www.warp.dev/pricing">warp.dev/pricing</a> coletado em 15/09/2026 (Free; Build a partir de US$ 20/mês; cloud conversation storage nos planos).
+      tmux: <a href="https://en.wikipedia.org/wiki/Tmux">Wikipedia, 3.7c em 17/08/2026</a>, multiplexer ISC, não é GUI de agentes.
+      Se algo mudou, <a href="https://github.com/LucasOl1337/kamuit/issues">abre um issue</a>.
+    </p>
+  </section>
+
+  <section id="instalar">
+    <h2>Instalar</h2>
+    <p class="sub">.NET 8 SDK. No Linux, GTK 4 e VTE gtk4. O atalho do Windows Search só atualiza depois do <code>dotnet publish</code> pra <code>publish\</code>.</p>
+    <div class="two">
+      <div><h4>Linux</h4><pre><span class="c"># clone e publica o host GTK4+VTE</span>
+git clone https://github.com/LucasOl1337/kamuit
+cd kamuit
+bash scripts/install-linux.sh
+
+<span class="c"># ou na unha</span>
+dotnet publish linux/KamuiT.Linux.csproj -c Release -r linux-x64 -o publish-linux
+./publish-linux/KamuiT
+
+<span class="a">kamuit open grok</span>
+kamuit list</pre></div>
+      <div><h4>Windows</h4><pre><span class="c">:: publica o app que o Start Menu abre</span>
+dotnet publish -c Release -r win-x64 --self-contained false -o publish --nologo
+pwsh -File scripts\install-cli.ps1
+pwsh -File scripts\install-shortcut.ps1
+
+<span class="a">kamuit open grok</span>
+kamuit open claude -C C:\Projetos\riftbomb -n 2</pre></div>
+    </div>
+    <p class="foot-note">Ops: <code>open</code>, <code>list</code>, <code>focus</code>, <code>type</code>, <code>close</code>, <code>show</code>, <code>ping</code>, <code>agents</code>, <code>limbo</code>. MCP: <code>scripts/kamuit-mcp.mjs</code>. Atalhos: Ctrl+Shift+T shell · G/C/D/P agentes · O project pack · X limbo · L restaura.</p>
+  </section>
+
+  <footer>
+    <div>KamuiT · sucessor do TerminalDE · feito por <a href="https://github.com/LucasOl1337">LucasOl1337</a></div>
+    <div><a href="https://github.com/LucasOl1337/kamuit">GitHub</a> · <a href="https://github.com/LucasOl1337/kamuit/blob/main/changelog.md">Changelog</a> · <a href="https://github.com/LucasOl1337/kamuit/issues">Issues</a></div>
+  </footer>
+</div>
+<script>
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

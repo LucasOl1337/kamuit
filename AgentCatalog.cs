@@ -36,6 +36,22 @@ public static class AgentCatalog
     /// </summary>
     public static string? ResolvePath(string agentId)
     {
+        var overrideDir = Environment.GetEnvironmentVariable("KAMUIT_AGENT_BIN_DIR");
+        if (!string.IsNullOrWhiteSpace(overrideDir))
+        {
+            var custom = Path.Combine(overrideDir, agentId);
+            if (File.Exists(custom))
+                return custom;
+            if (OperatingSystem.IsWindows())
+            {
+                foreach (var ext in new[] { ".exe", ".cmd", ".bat" })
+                {
+                    if (File.Exists(custom + ext))
+                        return custom + ext;
+                }
+            }
+        }
+
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var roaming = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

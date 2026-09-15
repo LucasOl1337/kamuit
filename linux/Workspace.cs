@@ -39,7 +39,7 @@ internal sealed class Workspace
 
         _window = Gtk.ApplicationWindow.New(app);
         _window.Title = "KamuiT";
-        _window.SetDefaultSize(1280, 800);
+        _window.SetDefaultSize(1520, 920);
         _window.Maximized = true;
 
         ApplyCss();
@@ -47,6 +47,7 @@ internal sealed class Workspace
         var header = Gtk.HeaderBar.New();
         header.TitleWidget = Gtk.Label.New("KamuiT");
         var plus = Gtk.Button.NewWithLabel("+");
+        plus.AddCssClass("kamuit-plus");
         plus.TooltipText = "Nova aba (Ctrl+Shift+T)";
         plus.OnClicked += (_, _) => NewTab();
         header.PackEnd(plus);
@@ -58,6 +59,7 @@ internal sealed class Workspace
         _window.SetChild(_notebook);
 
         var keys = Gtk.EventControllerKey.New();
+        keys.PropagationPhase = Gtk.PropagationPhase.Capture;
         keys.OnKeyPressed += OnKeyPressed; // returns bool: handled
         _window.AddController(keys);
 
@@ -112,15 +114,75 @@ internal sealed class Workspace
         {
             var css = Gtk.CssProvider.New();
             css.LoadFromString("""
-                window { background: #0c0c0c; }
+                window { background: #0c0c0c; color: #e8e8e8; }
                 headerbar { background: #181818; color: #cccccc; }
+                headerbar label { color: #cccccc; }
+                headerbar button {
+                    background: #2a2a2a;
+                    color: #e8e8e8;
+                    box-shadow: none;
+                    border: 1px solid #3a3a3a;
+                }
+                headerbar button.kamuit-plus {
+                    min-width: 32px;
+                    min-height: 28px;
+                    border-radius: 6px;
+                }
+                headerbar button.kamuit-plus:hover { background: #3a2020; }
                 notebook { background: #0c0c0c; }
                 notebook > header { background: #181818; }
-                notebook > header tabs tab { padding: 6px 10px; }
+                notebook tab,
+                notebook > header tabs tab {
+                    padding: 6px 12px;
+                    background: #181818;
+                    color: #9a9a9a;
+                    border-bottom: 2px solid transparent;
+                    min-width: 140px;
+                }
+                notebook tab:checked,
+                notebook > header tabs tab:checked {
+                    background: #241010;
+                    color: #eeeeee;
+                    border-bottom: 2px solid #c4161c;
+                }
+                notebook tab:hover,
+                notebook > header tabs tab:hover {
+                    background: #221616;
+                }
+                button.kamuit-tab-close {
+                    background: transparent;
+                    color: #888888;
+                    min-width: 18px;
+                    min-height: 18px;
+                    padding: 0;
+                    box-shadow: none;
+                    border: none;
+                }
+                button.kamuit-tab-close:hover { color: #e8e8e8; background: #3a2020; }
+                .kamuit-dialog { background: #181818; color: #e8e8e8; }
+                .kamuit-dialog label { color: #d0d0d0; }
+                list { background: #141414; color: #e0e0e0; border-radius: 6px; }
+                row { padding: 8px 12px; min-height: 28px; outline: none; box-shadow: none; }
+                row:selected { background: #241010; color: #eeeeee; }
+                row:hover { background: #221616; }
+                row:focus { outline: none; box-shadow: none; }
+                button {
+                    background: #2a2a2a;
+                    color: #e8e8e8;
+                    border-radius: 6px;
+                    padding: 6px 14px;
+                    box-shadow: none;
+                    border: 1px solid #3a3a3a;
+                }
+                button:hover { background: #3a2020; }
+                spinbutton { background: #141414; color: #e8e8e8; }
                 """);
             var display = Gdk.Display.GetDefault();
             if (display is not null)
-                Gtk.StyleContext.AddProviderForDisplay(display, css, 600);
+                Gtk.StyleContext.AddProviderForDisplay(display, css, 800);
+            var settings = Gtk.Settings.GetDefault();
+            if (settings is not null)
+                settings.GtkApplicationPreferDarkTheme = true;
         }
         catch { /* tema default se CSS falhar */ }
     }
@@ -139,12 +201,16 @@ internal sealed class Workspace
 
         var vte = VteNative.NewTerminal();
         var titleLabel = Gtk.Label.New("");
-        titleLabel.Ellipsize = Pango.EllipsizeMode.End;
-        titleLabel.MaxWidthChars = 28;
+        titleLabel.Ellipsize = Pango.EllipsizeMode.Start;
+        titleLabel.WidthChars = 16;
+        titleLabel.MaxWidthChars = 22;
+        titleLabel.Halign = Gtk.Align.Start;
+        titleLabel.Xalign = 0;
 
         var tabBox = Gtk.Box.New(Gtk.Orientation.Horizontal, 6);
         var close = Gtk.Button.NewFromIconName("window-close-symbolic");
         close.HasFrame = false;
+        close.AddCssClass("kamuit-tab-close");
         tabBox.Append(titleLabel);
         tabBox.Append(close);
 
@@ -173,8 +239,8 @@ internal sealed class Workspace
                 return;
             _sync.Post(_ =>
             {
-                tab.Title = t;
-                tab.TitleLabel.SetText(t);
+                tab.Title = FormatTabTitle(tab.Agent, t, tab.WorkingDirectory);
+                tab.TitleLabel.SetText(tab.Title);
             }, null);
         };
         VteNative.Connect(vte, "window-title-changed", onTitle);
@@ -480,6 +546,7 @@ internal sealed class Workspace
             "focus" or "activate" => HandleFocus(req),
             "type" or "send" or "write" => HandleType(req),
             "close" => HandleClose(req),
+            "limbo" or "hide" => HandleLimbo(req),
             "agents" => new KamuiResponse
             {
                 Ok = true,
@@ -512,6 +579,18 @@ internal sealed class Workspace
                 return info;
             }).ToList(),
         };
+    }
+
+    private static string FormatTabTitle(string? agent, string raw, string cwd)
+    {
+        var leaf = (raw ?? "").Trim();
+        if (leaf.Contains('/'))
+            leaf = leaf.TrimEnd('/').Split('/')[^1];
+        if (string.IsNullOrWhiteSpace(leaf) || leaf is "..." or "." or "~")
+            leaf = Path.GetFileName(cwd.TrimEnd(Path.DirectorySeparatorChar));
+        if (string.IsNullOrWhiteSpace(leaf))
+            leaf = "shell";
+        return agent is null ? leaf : agent + " · " + leaf;
     }
 
     private KamuiTabInfo ToInfo(TermTab t) => new()
@@ -549,6 +628,28 @@ internal sealed class Workspace
             Tabs = created,
             Message = $"opened {count} tab(s)" + (agent is null ? "" : $" with {agent}"),
         };
+    }
+
+    private KamuiResponse HandleLimbo(KamuiRequest req)
+    {
+        TermTab? tab = _active;
+        if (!string.IsNullOrWhiteSpace(req.Id) && Guid.TryParse(req.Id, out var gid))
+            tab = _tabs.FirstOrDefault(t => t.Id == gid);
+        else if (req.Slot is >= 1)
+            tab = _tabs.FirstOrDefault(t => t.Slot == req.Slot);
+
+        if (tab is null)
+            return KamuiResponse.Fail("tab not found");
+
+        if (ReferenceEquals(_active, tab))
+            SendActiveToLimbo();
+        else
+        {
+            ActivateTab(tab);
+            SendActiveToLimbo();
+        }
+
+        return HandleList();
     }
 
     private KamuiResponse HandleFocus(KamuiRequest req)

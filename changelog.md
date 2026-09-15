@@ -2,6 +2,19 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- Op `limbo` no protocolo (esconde a aba sem matar o PTY).
+- `KAMUIT_PROJECTS_ROOT`, `KAMUIT_AGENT_BIN_DIR`, `KAMUIT_SHELL_INIT` pra demo/teste isolado no Linux.
+- Vitrine em `docs/` (landing + capturas + vídeo 720p).
+
+### Changed
+
+- `CommandServer` no Linux passa a usar Unix domain socket de verdade (não NamedPipe).
+- Tema GTK das abas, diálogos e títulos; atalhos em fase Capture pra valer com o VTE focado.
+
 ## [0.3.0] — 2026-09-04 — porte Linux
 
 ### Added

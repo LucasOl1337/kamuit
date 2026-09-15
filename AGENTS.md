@@ -33,3 +33,22 @@ The app the user opens via **Windows Search / Start Menu** is:
 ### What “done” means here
 
 Done = `publish\KamuiT.exe` (and sibling DLLs/scripts/sounds) updated with the change, not only sources or `bin\Debug`.
+
+## Linux host (GTK 4 + VTE)
+
+Publish: `dotnet publish linux/KamuiT.Linux.csproj -c Release -r linux-x64 --self-contained false -o publish-linux --nologo`
+
+Socket: `$XDG_RUNTIME_DIR/kamuit.sock` (Unix domain, JSON-lines). CLI: `scripts/kamuit.sh`.
+
+To run a bench-local instance without touching the human session or `~/.grok` agents:
+
+- `KAMUIT_PROJECTS_ROOT` — project pack / initial cwd (need not exist beforehand)
+- `KAMUIT_AGENT_BIN_DIR` — overrides grok/claude/codex/pi/jcode resolution
+- `KAMUIT_SHELL_INIT` — bash rcfile instead of copying `~/.kamuit/kamuit-shell-init.sh`
+
+## Maintaining this file
+
+Keep this file for knowledge useful to almost every future agent session in this project.
+Do not repeat what the codebase already shows; point to the authoritative file or command instead.
+Prefer rewriting or pruning existing entries over appending new ones.
+When updating this file, preserve this bar for all agents and keep entries concise.
