@@ -12,7 +12,14 @@ Workspace nativo de terminais para agentes de IA (Grok, Claude, Codex, Pi) — s
 | **Windows** | WPF | Windows Terminal core (ConPTY + AtlasEngine) | PowerShell (`pwsh`) |
 | **Linux** | GTK 4 | VTE (`libvte-2.91-gtk4`) | `$SHELL` (bash/zsh/…) |
 
-O app no Windows continua o mesmo: WPF + `EasyWindowsTerminalControl`. No Linux o host é outro binário (`linux/KamuiT.Linux.csproj`) com o mesmo protocolo CLI/MCP (JSON-lines). Destino de runtime Linux: máquina OMART.
+O app no Windows continua o mesmo: WPF + `EasyWindowsTerminalControl`. No Linux o host é outro binário (`linux/KamuiT.Linux.csproj`) com o mesmo protocolo CLI/MCP (JSON-lines). O host Linux roda no Omarchy (Arch Linux).
+
+## Download
+
+Binários prontos em [Releases](https://github.com/LucasOl1337/kamuit/releases/latest):
+
+- `KamuiT-vX.Y.Z-win-x64.zip`: descompacte e abra `KamuiT.exe` (precisa do .NET 8 Desktop Runtime).
+- `KamuiT-vX.Y.Z-linux-x64.tar.gz`: extraia e rode `./KamuiT` (precisa do .NET 8 Runtime, GTK 4 e `libvte-2.91-gtk4`). Para instalar com atalho e CLI, use `scripts/install-linux.sh` a partir do código.
 
 ## Features
 
@@ -71,7 +78,7 @@ kamuit open claude -C "$HOME/projetos/riftbomb" -n 2
 kamuit list
 ```
 
-Ops: `open`, `list`, `focus`, `type`, `close`, `show`, `ping`, `agents`
+Ops: `open`, `list`, `focus`, `type`, `close`, `limbo`, `show`, `ping`, `agents`
 
 ### MCP
 
@@ -123,7 +130,6 @@ Ou o instalador: `bash scripts/install-linux.sh` (publica em `~/.local/share/kam
 
 ## Roadmap
 
-- Verificar o host Linux na máquina OMART (ainda não ligada a este PC)
 - Hotkey global no Linux (X11 / portal do compositor)
 - Performance benchmark vs Windows Terminal (target: within ~5%)
 - Codex ready-sound

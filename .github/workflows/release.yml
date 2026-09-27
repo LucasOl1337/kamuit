@@ -1,0 +1,61 @@
+name: Release assets
+
+# Publica os binários na GitHub Release: win-x64 (.zip) e linux-x64 (.tar.gz).
+# Roda quando a release é publicada ou manualmente para uma tag existente.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag da release (ex.: v0.3.0)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  TAG: ${{ github.event.release.tag_name || inputs.tag }}
+
+jobs:
+  windows:
+    name: win-x64
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Publish
+        run: dotnet publish KamuiT.csproj -c Release -r win-x64 --self-contained false -o publish --nologo
+      - name: Zip
+        shell: pwsh
+        run: Compress-Archive -Path publish\* -DestinationPath "KamuiT-$env:TAG-win-x64.zip"
+      - name: Upload
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload $env:TAG "KamuiT-$env:TAG-win-x64.zip" --clobber -R $env:GITHUB_REPOSITORY
+
+  linux:
+    name: linux-x64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Publish
+        run: dotnet publish linux/KamuiT.Linux.csproj -c Release -r linux-x64 --self-contained false -o "KamuiT-$TAG-linux-x64" --nologo
+      - name: Smoke --version
+        run: ./"KamuiT-$TAG-linux-x64"/KamuiT --version
+      - name: Tarball
+        run: tar -czf "KamuiT-$TAG-linux-x64.tar.gz" "KamuiT-$TAG-linux-x64"
+      - name: Upload
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" "KamuiT-$TAG-linux-x64.tar.gz" --clobber -R "$GITHUB_REPOSITORY"
