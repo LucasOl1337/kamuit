@@ -214,7 +214,7 @@ public partial class MainWindow : Window
                 $"$env:KAMUIT='1'; $env:KAMUIT_TAB_ID='{id}'; $env:KAMUIT_TAB='{slot}'; " +
                 (agentId is null ? "" : $"$env:KAMUIT_AGENT='{agentId}'; ") +
                 "$env:TERM='xterm-256color'; $env:COLORTERM='truecolor'; " +
-                "$env:TERM_PROGRAM='KamuiT'; $env:TERM_PROGRAM_VERSION='0.1.0'; " +
+                "$env:TERM_PROGRAM='KamuiT'; $env:TERM_PROGRAM_VERSION='0.3.0'; " +
                 $"$env:WT_SESSION='{id}'; " +
                 "if (Test-Path $env:USERPROFILE\\.kamuit\\kamuit-shell-init.ps1) { " +
                 ". $env:USERPROFILE\\.kamuit\\kamuit-shell-init.ps1 }" +

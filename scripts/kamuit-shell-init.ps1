@@ -7,7 +7,7 @@
 if (-not $env:TERM -or $env:TERM -eq 'dumb') { $env:TERM = 'xterm-256color' }
 if (-not $env:COLORTERM) { $env:COLORTERM = 'truecolor' }
 if (-not $env:TERM_PROGRAM) { $env:TERM_PROGRAM = 'KamuiT' }
-if (-not $env:TERM_PROGRAM_VERSION) { $env:TERM_PROGRAM_VERSION = '0.1.0' }
+if (-not $env:TERM_PROGRAM_VERSION) { $env:TERM_PROGRAM_VERSION = '0.3.0' }
 if (-not $env:WT_SESSION) { $env:WT_SESSION = [guid]::NewGuid().ToString() }
 if (-not $env:KAMUIT) { $env:KAMUIT = '1' }
 

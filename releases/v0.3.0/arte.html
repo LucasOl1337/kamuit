@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>KamuiT v0.3.0</title>
+<style>
+:root{--bg:#160D31;--bg2:#28184D;--fg:#FBF6EE;--fg2:#BCB1D2;--line:rgba(188,177,210,.22);--nov:#FFC61A;--mel:#2DD29A;--cor:#30BCEF;--sis:#AA88FA}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1200px;background:linear-gradient(160deg,#1c1038 0%,var(--bg) 35%,var(--bg2) 100%);color:var(--fg);font-family:"Inter","Noto Sans","DejaVu Sans",sans-serif;padding:56px 60px 48px;position:relative}
+.c{position:absolute;width:46px;height:46px;border-color:rgba(188,177,210,.45);border-style:solid}
+.tl{top:26px;left:26px;border-width:2px 0 0 2px}.tr{top:26px;right:26px;border-width:2px 2px 0 0}
+.bl{bottom:26px;left:26px;border-width:0 0 2px 2px}.br{bottom:26px;right:26px;border-width:0 2px 2px 0}
+header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:26px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:18px}
+h1{font-size:62px;font-weight:800;letter-spacing:-1px}
+.ver{font-size:26px;font-weight:700;padding:8px 26px;border-radius:999px;background:linear-gradient(90deg,#c4161c,#8f5cf0)}
+.kicker{margin-top:14px;color:#F4C98A;font-size:21px;font-weight:700;letter-spacing:4px}
+.meta{text-align:right}.meta b{display:block;color:#C9B6FF;font-size:19px;letter-spacing:4px}.meta span{display:block;margin-top:10px;font-size:21px;color:#E6DFF2}
+.lead{margin:22px 0 6px;color:var(--fg2);font-size:21px;line-height:1.45}
+section{padding:26px 0 22px;border-bottom:1px solid var(--line)}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sh h2{font-size:25px;letter-spacing:3px;font-weight:800;padding-left:18px;border-left:6px solid currentColor;line-height:1.1}
+.sh small{color:var(--fg2);font-size:19px}
+ul{list-style:none}
+li{display:flex;align-items:baseline;gap:18px;padding:11px 0 11px 26px;position:relative}
+li::before{content:"";position:absolute;left:2px;top:22px;width:12px;height:12px;border-radius:50%;background:var(--k)}
+li .t{font-size:24px;font-weight:700;white-space:nowrap}
+li .d{font-size:21px;color:var(--k2);flex:1}
+li .tag{font-size:16px;letter-spacing:2.5px;color:var(--fg2);font-weight:600;white-space:nowrap}
+.nov{color:var(--nov);--k:var(--nov);--k2:#FFE6A0}.mel{color:var(--mel);--k:var(--mel);--k2:#A7EFD4}
+.cor{color:var(--cor);--k:var(--cor);--k2:#A9E3F8}.sis{color:var(--sis);--k:var(--sis);--k2:#D5C6FC}
+section li .t{color:var(--fg)}
+footer{padding-top:26px}
+footer p{font-size:23px;color:#F4C98A;font-weight:600}
+footer .u{margin-top:12px;font-size:19px;color:var(--fg2)}
+footer .s{margin-top:20px;font-size:17px;letter-spacing:4px;color:#8f84ab;font-weight:700}
+</style></head><body>
+<div class="c tl"></div><div class="c tr"></div><div class="c bl"></div><div class="c br"></div>
+<header><div><div class="brand"><h1>KamuiT</h1><span class="ver">v0.3.0</span></div><div class="kicker">NOTAS DA ATUALIZAÇÃO</div></div>
+<div class="meta"><b>WINDOWS + LINUX</b><span>27 de setembro de 2026</span></div></header>
+<p class="lead">Workspace de terminais pra agentes de IA · cor = categoria · tag = sistema</p>
+
+<section class="nov"><div class="sh"><h2>NOVIDADES</h2><small>7 itens</small></div><ul>
+<li><span class="t">KamuiT no Linux</span><span class="d">GTK 4 + VTE, mesmo protocolo</span><span class="tag">LINUX</span></li>
+<li><span class="t">Abas no agente</span><span class="d">Grok, Claude, Codex e Pi já na pasta</span><span class="tag">TODOS</span></li>
+<li><span class="t">CLI kamuit</span><span class="d">abrir, listar, digitar e limbo por comando</span><span class="tag">TODOS</span></li>
+<li><span class="t">Servidor MCP</span><span class="d">agente usa as abas como ferramenta</span><span class="tag">TODOS</span></li>
+<li><span class="t">Project pack</span><span class="d">N abas abertas na pasta escolhida</span><span class="tag">TODOS</span></li>
+<li><span class="t">Reordenar abas</span><span class="d">arraste ou Ctrl+Shift+setas</span><span class="tag">WINDOWS</span></li>
+<li><span class="t">Colar no terminal</span><span class="d">Ctrl+V com bracketed paste</span><span class="tag">WINDOWS</span></li>
+</ul></section>
+
+<section class="mel"><div class="sh"><h2>MELHORIAS</h2><small>5 itens</small></div><ul>
+<li><span class="t">Uma janela só</span><span class="d">segunda abertura foca a janela viva</span><span class="tag">TODOS</span></li>
+<li><span class="t">Som na aba certa</span><span class="d">segue a aba depois de arrastar ou fechar</span><span class="tag">TODOS</span></li>
+<li><span class="t">Ctrl+Space previsível</span><span class="d">traz pra frente em vez de esconder</span><span class="tag">WINDOWS</span></li>
+<li><span class="t">TUIs com truecolor</span><span class="d">TERM, COLORTERM e WT_SESSION</span><span class="tag">WINDOWS</span></li>
+<li><span class="t">Visual escuro</span><span class="d">abas e diálogos no tema do KamuiT</span><span class="tag">LINUX</span></li>
+</ul></section>
+
+<section class="cor"><div class="sh"><h2>CORREÇÕES</h2><small>3 itens</small></div><ul>
+<li><span class="t">Tab volta pro terminal</span><span class="d">completa no PSReadLine e nas TUIs</span><span class="tag">WINDOWS</span></li>
+<li><span class="t">Atalhos com foco no VTE</span><span class="d">Ctrl+Shift+T, W e X sempre valem</span><span class="tag">LINUX</span></li>
+<li><span class="t">Aba ativa certa</span><span class="d">fechar e esconder agem na aba visível</span><span class="tag">LINUX</span></li>
+</ul></section>
+
+<section class="sis"><div class="sh"><h2>SISTEMAS</h2><small>3 itens</small></div><ul>
+<li><span class="t">Downloads prontos</span><span class="d">zip win-x64 e tar.gz linux-x64</span><span class="tag">RELEASE</span></li>
+<li><span class="t">CI nos dois sistemas</span><span class="d">build Windows e Linux a cada push</span><span class="tag">CI</span></li>
+<li><span class="t">Instância isolada</span><span class="d">testar sem encostar no shell real</span><span class="tag">DEV</span></li>
+</ul></section>
+
+<footer><p>Seus agentes, cada um na sua aba, no Windows e no Linux.</p>
+<div class="u">Notas completas: github.com/LucasOl1337/kamuit/releases/tag/v0.3.0</div>
+<div class="s">KAMUIT</div></footer>
+</body></html>

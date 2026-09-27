@@ -6,19 +6,17 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
 ### Added
 
-- Op `limbo` no protocolo (esconde a aba sem matar o PTY).
-- `KAMUIT_PROJECTS_ROOT`, `KAMUIT_AGENT_BIN_DIR`, `KAMUIT_SHELL_INIT` pra demo/teste isolado no Linux.
 - Vitrine em `docs/` (landing + capturas + vídeo 720p).
 
-### Changed
+## [0.3.0] — 2026-09-27 — porte Linux
 
-- `CommandServer` no Linux passa a usar Unix domain socket de verdade (não NamedPipe).
-- Tema GTK das abas, diálogos e títulos; atalhos em fase Capture pra valer com o VTE focado.
-
-## [0.3.0] — 2026-09-04 — porte Linux
+Primeira versão publicada desde a v0.1.0: reúne o trabalho da 0.2.0 (nunca lançada como release) e o porte Linux.
 
 ### Added
 
+- Op `limbo` no protocolo e na CLI Linux (esconde a aba sem matar o PTY).
+- `KAMUIT_PROJECTS_ROOT`, `KAMUIT_AGENT_BIN_DIR`, `KAMUIT_SHELL_INIT` pra rodar uma instância isolada (demo, teste, bancada).
+- Workflow `release.yml`: anexa `KamuiT-vX.Y.Z-win-x64.zip` e `KamuiT-vX.Y.Z-linux-x64.tar.gz` na GitHub Release.
 - Host Linux (`linux/KamuiT.Linux.csproj`): GTK 4 + VTE, abas, limbo, project pack, CLI/MCP, sons de ready.
 - Socket POSIX `$XDG_RUNTIME_DIR/kamuit.sock` (mesmo JSON-lines do named pipe Windows).
 - `scripts/kamuit.sh`, `scripts/kamuit-shell-init.sh`, `scripts/install-linux.sh`.
@@ -30,10 +28,22 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 - `CommandServer` deixa de depender do WPF Dispatcher; o marshal vai para a UI thread via delegate.
 - `AgentCatalog` resolve executáveis também em `~/.local/bin` / PATH no Linux.
 - `KamuiRequest.ParseCli` é a CLI compartilhada.
+- `CommandServer` no Linux usa Unix domain socket de verdade (não NamedPipe).
+- Tema escuro GTK nas abas, diálogos e títulos (`agente · pasta`); atalhos em fase Capture pra valer com o VTE focado.
+- Versão anunciada (`TERM_PROGRAM_VERSION`, MCP `serverInfo`) alinhada em 0.3.0 nos dois hosts.
+
+### Fixed
+
+- Linux: a aba ativa ficava presa na anterior (o `switch-page` do GTK chega antes da troca), então `Ctrl+Shift+W`/`Ctrl+Shift+X` e `type` sem slot agiam na aba errada.
+
+### Removed
+
+- `package.json` do Maestri, commitado por engano.
 
 ### Validation
 
-- Compilação Windows e Linux neste PC (Windows). Runtime gráfico Linux e máquina OMART: não verificados aqui.
+- 04/09: compilação Windows e Linux no PC Windows.
+- 27/09: host Linux aberto numa bancada do Omarchy (GTK 4 + VTE): socket, `open`, `type`, `focus`, `limbo`, `Ctrl+Shift+T` e `Ctrl+Shift+X` com o terminal focado.
 
 ## [0.2.0] — 2026-07-27 — agent-first safe commit
 
