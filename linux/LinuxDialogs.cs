@@ -9,9 +9,11 @@ internal static class LinuxDialogs
         win.SetDefaultSize(420, 280);
         win.TransientFor = parent;
         win.Modal = true;
+        win.Decorated = false;
+        win.AddCssClass("kamuit-dialog");
 
         var box = Gtk.Box.New(Gtk.Orientation.Vertical, 8);
-        box.MarginStart = box.MarginEnd = box.MarginTop = box.MarginBottom = 12;
+        box.MarginStart = box.MarginEnd = box.MarginTop = box.MarginBottom = 16;
         box.Append(Gtk.Label.New($"{tabs.Count} sessão(ões) em espera"));
 
         var list = Gtk.ListBox.New();
@@ -62,10 +64,12 @@ internal static class LinuxDialogs
         win.SetDefaultSize(480, 360);
         win.TransientFor = parent;
         win.Modal = true;
+        win.Decorated = false;
+        win.AddCssClass("kamuit-dialog");
 
         var box = Gtk.Box.New(Gtk.Orientation.Vertical, 8);
-        box.MarginStart = box.MarginEnd = box.MarginTop = box.MarginBottom = 12;
-        box.Append(Gtk.Label.New("N abas já no folder — " + root));
+        box.MarginStart = box.MarginEnd = box.MarginTop = box.MarginBottom = 16;
+        box.Append(Gtk.Label.New("N abas já no folder"));
 
         var list = Gtk.ListBox.New();
         list.SelectionMode = Gtk.SelectionMode.Single;

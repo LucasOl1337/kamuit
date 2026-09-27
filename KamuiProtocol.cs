@@ -49,7 +49,7 @@ public sealed class KamuiRequest
         if (op is "grok" or "claude" or "codex" or "pi" or "jcode" or "shell")
             return new KamuiRequest { Op = "open", Agent = op, Count = 1, Show = true };
 
-        if (op is not ("open" or "new" or "tab" or "list" or "show" or "focus" or "type" or "ping" or "close" or "agents"))
+        if (op is not ("open" or "new" or "tab" or "list" or "show" or "focus" or "type" or "ping" or "close" or "limbo" or "hide" or "agents"))
             return new KamuiRequest { Op = "show" };
 
         var req = new KamuiRequest { Op = op, Show = true };

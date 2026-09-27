@@ -102,7 +102,9 @@ internal static class VteNative
         _setColorBg(handle, ref bg);
         _setColorFg(handle, ref fg);
 
-        var font = _fontFromString("Monospace 11");
+        var font = _fontFromString("JetBrains Mono 12");
+        if (font == nint.Zero)
+            font = _fontFromString("Monospace 12");
         if (font != nint.Zero)
         {
             _setFont(handle, font);
