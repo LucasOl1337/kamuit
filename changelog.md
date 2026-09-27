@@ -2,6 +2,12 @@
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- Vitrine em `docs/` (landing + capturas + vídeo 720p).
+
 ## [0.3.0] — 2026-09-27 — porte Linux
 
 Primeira versão publicada desde a v0.1.0: reúne o trabalho da 0.2.0 (nunca lançada como release) e o porte Linux.
