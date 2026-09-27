@@ -55,7 +55,8 @@ internal sealed class Workspace
 
         _notebook = Gtk.Notebook.New();
         _notebook.Scrollable = true;
-        _notebook.OnSwitchPage += (_, _) => SyncActiveFromNotebook();
+        // switch-page dispara antes do notebook trocar a página atual: usa o índice do sinal.
+        _notebook.OnSwitchPage += (_, args) => SyncActiveFromNotebook((int)args.PageNum);
         _window.SetChild(_notebook);
 
         var keys = Gtk.EventControllerKey.New();
@@ -288,24 +289,12 @@ internal sealed class Workspace
         VteNative.GrabFocus(tab.Vte);
     }
 
-    private void SyncActiveFromNotebook()
+    private void SyncActiveFromNotebook(int pageNum)
     {
-        var nb = VteNative.HandleOf(_notebook);
-        var n = VteNative.NPages(nb);
-        // current page is set after switch; match by visible page child
-        for (var i = 0; i < n; i++)
-        {
-            var child = VteNative.NthPage(nb, i);
-            var tab = _tabs.FirstOrDefault(t => t.Vte == child);
-            if (tab is null)
-                continue;
-            // Notebook current page: if this child is the selected one, Activate without recursion
-        }
-
         try
         {
-            var current = _notebook.GetCurrentPage();
-            var child = VteNative.NthPage(nb, current);
+            var nb = VteNative.HandleOf(_notebook);
+            var child = VteNative.NthPage(nb, pageNum);
             var tab = _tabs.FirstOrDefault(t => t.Vte == child);
             if (tab is not null && !ReferenceEquals(tab, _active))
             {
